@@ -28,6 +28,10 @@ focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
 focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
 focus_pane_right = ["prefix+l", "ctrl+alt+l"]
 
+# tmux: prefix+z zooms (fullscreens) the focused pane; prefix+f added as a
+# same-action alias (f for "focus")
+zoom = ["prefix+f", "prefix+z"]
+
 # tmux: prefix+l switches to the last focused TAB (tmux "last-window").
 #
 # herdr 0.7.4 has no built-in last_tab action (only cyclic previous/next_tab;
