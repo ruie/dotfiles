@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# One-command environment sync. Prereq: Determinate Nix.
-#   git clone https://github.com/ruie/dotfiles ~/dotfiles && ~/dotfiles/sync.sh
+# One-command environment sync for every machine. Prereq: Determinate Nix.
+#   git clone git@github.com:ruie/dotfiles.git ~/dotfiles && ~/dotfiles/sync.sh
 set -euo pipefail
 
 cd "$(dirname "$0")"
@@ -15,13 +15,21 @@ command -v nix > /dev/null || {
   exit 1
 }
 
-nix run home-manager -- switch --flake ".#$USER" -b backup
+if [ "$(uname)" = "Darwin" ]; then
+  # macOS: nix-darwin drives everything (system, Homebrew, home-manager module).
+  # darwin-rebuild isn't on PATH before the first switch, so run it from the flake.
+  sudo nix run nix-darwin/master#darwin-rebuild -- switch --flake ".#mac"
+  RC=~/.zshrc
+else
+  nix run home-manager -- switch --flake ".#$USER" -b backup
+  RC=~/.bashrc
+fi
 
-# Wire aliases into the machine-local .bashrc once
+# Wire aliases into the machine-local rc file once
 LINE='[ -f ~/.config/dotfiles/aliases.sh ] && . ~/.config/dotfiles/aliases.sh'
-grep -qxF "$LINE" ~/.bashrc || echo "$LINE" >> ~/.bashrc
+grep -qxF "$LINE" "$RC" 2> /dev/null || echo "$LINE" >> "$RC"
 
-# Register the local herdr plugin once (herdr keeps its own registry)
+# Register herdr plugins once (herdr keeps its own registry)
 if command -v herdr > /dev/null; then
   herdr plugin list 2> /dev/null | grep -q last-tab ||
     herdr plugin link "$PWD/herdr/plugins/last-tab" > /dev/null
@@ -30,4 +38,4 @@ if command -v herdr > /dev/null; then
   mkdir -p ~/.local/state/herdr/plugins/last-tab
 fi
 
-echo "synced: home-manager generation $(home-manager generations 2> /dev/null | head -1 || echo ok)"
+echo "synced"
