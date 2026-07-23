@@ -38,6 +38,9 @@ if [ "$(uname)" != "Darwin" ]; then
     # No auto-update: versions come from brew's JSON API anyway, and a stale
     # multi-tap git update can stall sync for many minutes (seen on WSL)
     export HOMEBREW_NO_AUTO_UPDATE=1
+    # On WSL, drop Windows /mnt/* PATH entries for brew: its Ruby stats every
+    # PATH dir over the 9p bridge, which can hang for minutes (seen 2026-07-23)
+    PATH=$(printf %s "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd:)
     brew list herdr > /dev/null 2>&1 || brew install --quiet herdr
     brew list hunk > /dev/null 2>&1 || brew install --quiet hunk
   else
