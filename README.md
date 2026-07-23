@@ -50,11 +50,13 @@ line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
 - `home/.config/starship.toml` — prompt config
 - `home/.config/wezterm/` — WezTerm config (symlinked on macOS only; the cask is in `nix/darwin.nix`)
 - CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, tree, ast-grep, gh, lazygit, starship, bun, node, JetBrainsMono Nerd Font
-- `hunk` — via bun on Linux (sync.sh), via Homebrew on macOS
-- macOS only: Homebrew itself + brews/casks (herdr, hunk, WezTerm), declared in `nix/darwin.nix`
+- `herdr` + `hunk` — Homebrew everywhere: declared in `nix/darwin.nix` on macOS, installed by sync.sh on Linux (needs linuxbrew; sync prints the installer command if missing). Upgrade with `brew upgrade`, not `herdr update`.
+- macOS only: Homebrew itself + casks (WezTerm), declared in `nix/darwin.nix`
 
 ## Not managed (yet)
 
 - Agent CLIs (`claude`, `codex`, `pi`) — installer/bun-based, see their docs
 - Tool auth state (`gh auth login`, `claude`, `:Copilot auth`)
-- herdr on Linux (`curl -fsSL https://herdr.dev/install.sh | sh`); on macOS it's a managed brew
+- Homebrew itself on Linux (its installer needs sudo, so sync.sh only prompts)
+- Tailscale — system-level per machine (apt on the vps, Windows client for WSL,
+  the macOS app); shell.sh aliases `tailscale` to the right CLI everywhere

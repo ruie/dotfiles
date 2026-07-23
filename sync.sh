@@ -30,9 +30,19 @@ LINE='[ -f ~/.config/shell.sh ] && . ~/.config/shell.sh'
 sed -i.bak '/config\/dotfiles\/\(aliases\|shell\)\.sh/d' "$RC" 2>/dev/null && rm -f "$RC.bak"
 grep -qxF "$LINE" "$RC" 2>/dev/null || echo "$LINE" >>"$RC"
 
-# hunk isn't in nixpkgs; bun covers Linux, Homebrew covers macOS
-export PATH="$HOME/.bun/bin:$PATH"
-command -v hunk >/dev/null || bun install -g hunkdiff >/dev/null
+# herdr and hunk come from Homebrew everywhere (not in nixpkgs). macOS
+# declares them in nix/darwin.nix; Linux installs them here via linuxbrew.
+if [ "$(uname)" != "Darwin" ]; then
+  if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
+    eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    brew list herdr > /dev/null 2>&1 || brew install --quiet herdr
+    brew list hunk > /dev/null 2>&1 || brew install --quiet hunk
+  else
+    echo "note: Homebrew not found — herdr and hunk were NOT installed." >&2
+    echo '  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"' >&2
+    echo "  then rerun sync" >&2
+  fi
+fi
 
 # Register herdr plugins once (herdr keeps its own registry)
 if command -v herdr >/dev/null; then
