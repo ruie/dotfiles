@@ -1,0 +1,110 @@
+onboarding = false
+
+# Keybindings mirrored from ~/.tmux.conf
+[keys]
+# tmux: prefix is Ctrl-Space instead of Ctrl-b
+prefix = "ctrl+space"
+
+# tmux: prefix+r reloads the config (herdr default was prefix+shift+r);
+# resize mode moved to prefix+shift+r to make room
+reload_config = "prefix+r"
+resize_mode = "prefix+shift+r"
+
+# tmux: prefix+Escape / prefix+Ctrl-[ enter copy mode (kept prefix+[ too)
+copy_mode = ["prefix+esc", "prefix+["]
+
+# tmux: prefix+\ splits side-by-side, prefix+- splits stacked
+# (split_horizontal already defaults to prefix+minus, matching tmux)
+split_vertical = "prefix+backslash"
+
+# tmux: prefix+d detaches (herdr default was prefix+q)
+detach = "prefix+d"
+
+# vim-tmux-navigator-style direct pane navigation (ctrl+alt is the
+# terminal-safe chord family; plain ctrl+hjkl is handled vim-aware by the
+# vim-herdr-navigation plugin below)
+focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
+focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+
+# tmux: prefix+l switches to the last focused TAB (tmux "last-window").
+#
+# herdr 0.7.4 has no built-in last_tab action (only cyclic previous/next_tab;
+# last_pane exists but is pane-level MRU, not tab-level), so this is a custom
+# local plugin written 2026-07-17: ~/.config/herdr/plugins/local/last-tab
+# (herdr-plugin.toml + last-tab.sh, registered via `herdr plugin link`).
+# How it works:
+# - A `[[events]] on = "tab.focused"` hook runs `last-tab.sh record` on EVERY
+#   tab switch (keybinding, mouse, API), keeping a two-line state file
+#   (~/.local/state/herdr/plugins/last-tab/history: prev tab id, current tab
+#   id) — so "last" is true MRU, not just the tab last toggled from.
+# - The `toggle` action bound below reads that file and focuses the previous
+#   tab (via `herdr tab focus`); if that tab was closed it drops the stale
+#   entry and does nothing. Requires jq (same as vim-herdr-navigation).
+# Debug: `herdr plugin log list --plugin last-tab` shows record/toggle runs.
+# (prefix+l was focus_pane_right; ctrl+alt+l / vim-aware ctrl+l still do that)
+[[keys.command]]
+key = "prefix+shift+l"
+type = "plugin_action"
+command = "last-tab.toggle"
+description = "switch to last tab"
+
+# vim-herdr-navigation: ctrl+hjkl moves vim splits inside vim panes and
+# herdr panes everywhere else (shadows readline ctrl+l/ctrl+k in shells)
+#
+# How it works (verified 2026-07-17): each press runs the plugin's navigate.sh,
+# which checks the focused pane's foreground process — Vim/Neovim gets the key
+# forwarded into the pane (`herdr pane send-keys`), anything else moves herdr
+# focus directly. Inside Neovim the matching <C-h/j/k/l> maps come from the
+# plugin's editor/nvim.lua, loaded from ~/.config/nvim/lua/config/keymaps.lua.
+# It MUST load there: LazyVim sets its own <C-h/j/k/l> window maps on VeryLazy,
+# which clobber anything set earlier (e.g. in a plugin spec's config()) — that
+# was why ctrl+hjkl once went dead inside Neovim while herdr's side worked.
+# Debug: `herdr plugin log list --plugin vim-herdr-navigation` shows each press;
+# empty stdout = key forwarded to vim, JSON stdout = herdr pane focus moved.
+[[keys.command]]
+key = "ctrl+h"
+type = "plugin_action"
+command = "vim-herdr-navigation.left"
+description = "navigate left (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+j"
+type = "plugin_action"
+command = "vim-herdr-navigation.down"
+description = "navigate down (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+k"
+type = "plugin_action"
+command = "vim-herdr-navigation.up"
+description = "navigate up (vim/herdr)"
+
+[[keys.command]]
+key = "ctrl+l"
+type = "plugin_action"
+command = "vim-herdr-navigation.right"
+description = "navigate right (vim/herdr)"
+
+[ui]
+# No gaps between split panes — adjacent panes share a single divider border
+pane_gaps = false
+
+# Tab bar styling (checked 2026-07-17, herdr 0.7.4): NOT configurable. The tab
+# row's gaps/separators are hard-coded — no ui.tab_gaps / tab_separator keys
+# exist in this version, the latest, or the preview-channel config reference.
+# pane_gaps above only affects pane layout. [theme.custom] tokens (divider,
+# panel_bg, surface, accent, ...) can recolor the tab row but not reshape it.
+# Only tab-bar option available: hide_tab_bar_when_single_tab (default false).
+# If it matters, file a feature request (e.g. ui.tab_gaps mirroring pane_gaps).
+
+# Clipboard notes (verified 2026-07-17):
+# - herdr forwards OSC 52 clipboard writes from panes (even unfocused ones) up to
+#   Windows Terminal, which puts them on the Windows clipboard. No config needed.
+# - Neovim yanks reach the Windows clipboard via OSC 52, configured in
+#   ~/.config/nvim/lua/config/options.lua (vim.g.clipboard). No $TMUX inside herdr
+#   and no win32yank/xclip installed, so OSC 52 is the whole transport.
+# - Paste INTO nvim from Windows: Ctrl+Shift+V (Windows Terminal doesn't answer
+#   OSC 52 read requests, so `p` pastes nvim's own register instead).
+show_agent_labels_on_pane_borders = false

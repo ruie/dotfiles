@@ -1,0 +1,18 @@
+id = "last-tab"
+name = "Last Tab"
+version = "0.1.0"
+min_herdr_version = "0.7.0"
+description = "tmux-style last-window: toggle to the most recently focused tab"
+platforms = ["linux", "macos"]
+
+# Every tab focus change (any means: keybinding, mouse, API) records history,
+# so "last tab" is always the true MRU tab, not just the last one toggled from.
+[[events]]
+on = "tab.focused"
+command = ["bash", "last-tab.sh", "record"]
+
+[[actions]]
+id = "toggle"
+title = "Switch to last tab"
+contexts = ["global"]
+command = ["bash", "last-tab.sh", "toggle"]
