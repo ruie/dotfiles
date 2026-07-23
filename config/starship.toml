@@ -1,0 +1,7 @@
+# Starship prompt — defaults are good; overrides go here.
+# Docs: https://starship.rs/config/
+
+add_newline = true
+
+[git_branch]
+symbol = " "

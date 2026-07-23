@@ -1,4 +1,4 @@
-{ user, ... }:
+{ pkgs, user, ... }:
 
 {
   # Determinate manages the Nix daemon itself; nix-darwin must not.
@@ -10,6 +10,8 @@
   system.primaryUser = user;
   users.users.${user}.home = "/Users/${user}";
   system.stateVersion = 6;
+
+  fonts.packages = [ pkgs.nerd-fonts.jetbrains-mono ];
 
   nix-homebrew = {
     enable = true;
@@ -24,9 +26,11 @@
     onActivation.autoUpdate = true;
     brews = [
       "herdr"
+      "hunk" # Linux gets it via bun in sync.sh (not in nixpkgs)
     ];
     casks = [
-      # GUI apps live here, e.g. "wezterm", "tailscale-app", "raycast"
+      "wezterm"
+      # more GUI apps here, e.g. "tailscale-app", "raycast"
     ];
   };
 }

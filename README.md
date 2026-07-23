@@ -18,9 +18,11 @@ nix/          how machines are built
   home.nix      shared user env: packages, symlinks (all machines)
   darwin.nix    macOS system: nix-darwin + Homebrew
 config/       what gets symlinked into ~/.config
-  nvim/         LazyVim config
-  herdr/        herdr config + local last-tab plugin
-  aliases.sh    clauded, codexd, hvps
+  nvim/           LazyVim config
+  herdr/          herdr config + local last-tab plugin
+  wezterm/        WezTerm config (macOS only)
+  starship.toml   prompt
+  shell.sh        aliases (.., clauded, codexd, hvps), PATH, starship init
 ```
 
 ## Any machine, fresh or not
@@ -43,9 +45,12 @@ line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
 
 - `config/nvim/` — LazyVim (`~/.config/nvim`); copilot via the LazyVim `ai.copilot` extra, auth with `:Copilot auth`
 - `config/herdr/` — herdr config + the local `last-tab` plugin (registered by sync.sh)
-- `config/aliases.sh` — `clauded`, `codexd`, `hvps` (sourced from `.bashrc`/`.zshrc`)
-- CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, gh, bun, node
-- macOS only: Homebrew itself + brews/casks, declared in `nix/darwin.nix`
+- `config/shell.sh` — aliases (`..`, `clauded`, `codexd`, `hvps`), bun PATH, starship init (sourced from `.bashrc`/`.zshrc`)
+- `config/starship.toml` — prompt config
+- `config/wezterm/` — WezTerm config (symlinked on macOS only; the cask is in `nix/darwin.nix`)
+- CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, tree, ast-grep, gh, lazygit, starship, bun, node, JetBrainsMono Nerd Font
+- `hunk` — via bun on Linux (sync.sh), via Homebrew on macOS
+- macOS only: Homebrew itself + brews/casks (herdr, hunk, WezTerm), declared in `nix/darwin.nix`
 
 ## Not managed (yet)
 

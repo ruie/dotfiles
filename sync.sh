@@ -25,9 +25,14 @@ else
   RC=~/.bashrc
 fi
 
-# Wire aliases into the machine-local rc file once
-LINE='[ -f ~/.config/dotfiles/aliases.sh ] && . ~/.config/dotfiles/aliases.sh'
+# Wire shared shell setup into the machine-local rc file once
+LINE='[ -f ~/.config/dotfiles/shell.sh ] && . ~/.config/dotfiles/shell.sh'
+sed -i.bak '/dotfiles\/aliases\.sh/d' "$RC" 2> /dev/null && rm -f "$RC.bak"
 grep -qxF "$LINE" "$RC" 2> /dev/null || echo "$LINE" >> "$RC"
+
+# hunk isn't in nixpkgs; bun covers Linux, Homebrew covers macOS
+export PATH="$HOME/.bun/bin:$PATH"
+command -v hunk > /dev/null || bun install -g hunkdiff > /dev/null
 
 # Register herdr plugins once (herdr keeps its own registry)
 if command -v herdr > /dev/null; then

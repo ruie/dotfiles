@@ -1,4 +1,4 @@
-{ config, pkgs, username, ... }:
+{ config, lib, pkgs, username, ... }:
 let
   dotfiles = "${config.home.homeDirectory}/dotfiles";
   link = path: config.lib.file.mkOutOfStoreSymlink "${dotfiles}/${path}";
@@ -16,10 +16,19 @@ in {
     fd
     fzf
     jq
+    tree
+    ast-grep
     gh
+    lazygit
+    starship
     bun
     nodejs_22
+    nerd-fonts.jetbrains-mono
   ];
+
+  # Registers the nerd font with fontconfig on Linux (no-op elsewhere);
+  # macOS registers it via fonts.packages in nix/darwin.nix.
+  fonts.fontconfig.enable = true;
 
   home.sessionVariables.EDITOR = "nvim";
 
@@ -27,9 +36,11 @@ in {
   # edited in place and tool-written files (lazy-lock.json) land in git.
   xdg.configFile."nvim".source = link "config/nvim";
   xdg.configFile."herdr/config.toml".source = link "config/herdr/config.toml";
+  xdg.configFile."starship.toml".source = link "config/starship.toml";
+  xdg.configFile."wezterm" = lib.mkIf pkgs.stdenv.isDarwin { source = link "config/wezterm"; };
 
   # Sourced from .bashrc/.zshrc (sync.sh adds the line); not managing the rc
   # files themselves so machine-local setup (bun installer, nvm, brew) keeps
   # ownership of them.
-  xdg.configFile."dotfiles/aliases.sh".source = link "config/aliases.sh";
+  xdg.configFile."dotfiles/shell.sh".source = link "config/shell.sh";
 }
