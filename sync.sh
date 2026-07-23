@@ -31,8 +31,14 @@ sed -i.bak '/config\/dotfiles\/\(aliases\|shell\)\.sh/d' "$RC" 2>/dev/null && rm
 grep -qxF "$LINE" "$RC" 2>/dev/null || echo "$LINE" >>"$RC"
 
 # herdr and hunk come from Homebrew everywhere (not in nixpkgs). macOS
-# declares them in nix/darwin.nix; Linux installs them here via linuxbrew.
+# declares them in nix/darwin.nix (nix-homebrew installs Homebrew itself);
+# Linux installs them here via linuxbrew.
 if [ "$(uname)" != "Darwin" ]; then
+  # Homebrew's installer needs sudo, so only run it where sudo can prompt
+  if [ ! -x /home/linuxbrew/.linuxbrew/bin/brew ] && [ -t 0 ]; then
+    echo "Homebrew not found — running its installer (sudo will prompt)"
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  fi
   if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
     # No auto-update: versions come from brew's JSON API anyway, and a stale

@@ -57,6 +57,6 @@ line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
 
 - Agent CLIs (`claude`, `codex`, `pi`) — installer/bun-based, see their docs
 - Tool auth state (`gh auth login`, `claude`, `:Copilot auth`)
-- Homebrew itself on Linux (its installer needs sudo, so sync.sh only prompts)
+- Homebrew itself on Linux — sync.sh runs its installer on first interactive run (needs your sudo password)
 - Tailscale — system-level per machine (apt on the vps, Windows client for WSL,
   the macOS app); shell.sh aliases `tailscale` to the right CLI everywhere
