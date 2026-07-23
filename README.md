@@ -49,12 +49,14 @@ line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
 - `home/.config/shell.sh` — aliases (`sync`, `..`, `clauded`, `codexd`, `hvps`), bun PATH, starship init (sourced from `.bashrc`/`.zshrc`)
 - `home/.config/starship.toml` — prompt config
 - `home/.config/wezterm/` — WezTerm config (symlinked on macOS only; the cask is in `nix/darwin.nix`)
-- CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, tree, ast-grep, gh, lazygit, starship, bun, node, JetBrainsMono Nerd Font
+- CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, tree, ast-grep, gh, lazygit, starship, JetBrainsMono Nerd Font
 - `herdr` + `hunk` — Homebrew everywhere: declared in `nix/darwin.nix` on macOS, installed by sync.sh on Linux (needs linuxbrew; sync prints the installer command if missing). Upgrade with `brew upgrade`, not `herdr update`.
 - macOS only: Homebrew itself + casks (WezTerm), declared in `nix/darwin.nix`
 
 ## Not managed (yet)
 
+- `bun` — official installer (`~/.bun`), self-updates via `bun upgrade`; shell.sh puts it on PATH
+- `node` — nvm per machine (its installer appends the loader to `.bashrc`)
 - Agent CLIs (`claude`, `codex`, `pi`) — installer/bun-based, see their docs
 - Tool auth state (`gh auth login`, `claude`, `:Copilot auth`)
 - Homebrew itself on Linux — sync.sh runs its installer on first interactive run (needs your sudo password)

@@ -26,7 +26,7 @@
     onActivation.autoUpdate = true;
     brews = [
       "herdr"
-      "hunk" # Linux gets it via bun in sync.sh (not in nixpkgs)
+      "hunk" # Linux gets it via linuxbrew in sync.sh (not in nixpkgs)
     ];
     casks = [
       "wezterm"

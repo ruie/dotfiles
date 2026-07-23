@@ -24,8 +24,6 @@ in {
     gh
     lazygit
     starship
-    bun
-    nodejs_22
     nerd-fonts.jetbrains-mono
   ];
 
