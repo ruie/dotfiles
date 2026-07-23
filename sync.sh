@@ -35,6 +35,9 @@ grep -qxF "$LINE" "$RC" 2>/dev/null || echo "$LINE" >>"$RC"
 if [ "$(uname)" != "Darwin" ]; then
   if [ -x /home/linuxbrew/.linuxbrew/bin/brew ]; then
     eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
+    # No auto-update: versions come from brew's JSON API anyway, and a stale
+    # multi-tap git update can stall sync for many minutes (seen on WSL)
+    export HOMEBREW_NO_AUTO_UPDATE=1
     brew list herdr > /dev/null 2>&1 || brew install --quiet herdr
     brew list hunk > /dev/null 2>&1 || brew install --quiet hunk
   else
