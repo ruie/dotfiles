@@ -36,7 +36,7 @@ zoom = ["prefix+f", "prefix+z"]
 #
 # herdr 0.7.4 has no built-in last_tab action (only cyclic previous/next_tab;
 # last_pane exists but is pane-level MRU, not tab-level), so this is a custom
-# local plugin written 2026-07-17: ~/.config/herdr/plugins/local/last-tab
+# local plugin written 2026-07-17: ~/dotfiles/home/.config/herdr/plugins/last-tab
 # (herdr-plugin.toml + last-tab.sh, registered via `herdr plugin link`).
 # How it works:
 # - A `[[events]] on = "tab.focused"` hook runs `last-tab.sh record` on EVERY
