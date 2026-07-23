@@ -23,7 +23,7 @@ home/         mirrors ~ — home/.config/<x> IS ~/.config/<x>
     herdr/          herdr config + local last-tab plugin
     wezterm/        WezTerm config (macOS only)
     starship.toml   prompt
-    shell.sh        aliases (.., clauded, codexd, hvps), PATH, starship init
+    shell.sh        aliases (sync, .., clauded, codexd, hvps), PATH, starship init
 ```
 
 ## Any machine, fresh or not
@@ -46,7 +46,7 @@ line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
 
 - `home/.config/nvim/` — LazyVim (`~/.config/nvim`); copilot via the LazyVim `ai.copilot` extra, auth with `:Copilot auth`
 - `home/.config/herdr/` — herdr config + the local `last-tab` plugin (registered by sync.sh)
-- `home/.config/shell.sh` — aliases (`..`, `clauded`, `codexd`, `hvps`), bun PATH, starship init (sourced from `.bashrc`/`.zshrc`)
+- `home/.config/shell.sh` — aliases (`sync`, `..`, `clauded`, `codexd`, `hvps`), bun PATH, starship init (sourced from `.bashrc`/`.zshrc`)
 - `home/.config/starship.toml` — prompt config
 - `home/.config/wezterm/` — WezTerm config (symlinked on macOS only; the cask is in `nix/darwin.nix`)
 - CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, tree, ast-grep, gh, lazygit, starship, bun, node, JetBrainsMono Nerd Font
