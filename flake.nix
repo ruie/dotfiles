@@ -21,7 +21,7 @@
       mkHome = username:
         home-manager.lib.homeManagerConfiguration {
           pkgs = nixpkgs.legacyPackages.x86_64-linux;
-          modules = [ ./home/common.nix ];
+          modules = [ ./nix/home.nix ];
           extraSpecialArgs = { inherit username; };
         };
     in {
@@ -36,14 +36,14 @@
       darwinConfigurations.mac = nix-darwin.lib.darwinSystem {
         specialArgs = { user = macUser; };
         modules = [
-          ./darwin/configuration.nix
+          ./nix/darwin.nix
           nix-homebrew.darwinModules.nix-homebrew
           home-manager.darwinModules.home-manager
           {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
             home-manager.extraSpecialArgs = { username = macUser; };
-            home-manager.users.${macUser} = import ./home/common.nix;
+            home-manager.users.${macUser} = import ./nix/home.nix;
           }
         ];
       };

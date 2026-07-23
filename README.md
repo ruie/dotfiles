@@ -9,6 +9,20 @@ into this repo, so edits happen in place and `git status` shows drift.
 | personal | macOS (Apple Silicon) | `mac` (user `ruie`) | nix-darwin + nix-homebrew + home-manager |
 | vps | Hetzner Ubuntu | `ruie` | home-manager standalone |
 
+## Layout
+
+```
+flake.nix     machine profiles (the only place machines are declared)
+sync.sh       the one command — apply everything, idempotent
+nix/          how machines are built
+  home.nix      shared user env: packages, symlinks (all machines)
+  darwin.nix    macOS system: nix-darwin + Homebrew
+config/       what gets symlinked into ~/.config
+  nvim/         LazyVim config
+  herdr/        herdr config + local last-tab plugin
+  aliases.sh    clauded, codexd, hvps
+```
+
 ## Any machine, fresh or not
 
 ```sh
@@ -23,16 +37,15 @@ idempotent — rerun any time (after `git pull`, or after editing configs).
 
 macOS first run: if the Mac's username isn't `ruie`, change the one `macUser`
 line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
-`darwin/configuration.nix` once the brews/casks list is the machine's complete
-inventory.
+`nix/darwin.nix` once the brews/casks list is the machine's complete inventory.
 
 ## What it manages
 
-- `nvim/` — LazyVim config (`~/.config/nvim`); copilot via the LazyVim `ai.copilot` extra, auth with `:Copilot auth`
-- `herdr/` — herdr config + the local `last-tab` plugin (registered by sync.sh)
-- `aliases.sh` — `clauded`, `codexd`, `hvps` (sourced from `.bashrc`/`.zshrc`)
+- `config/nvim/` — LazyVim (`~/.config/nvim`); copilot via the LazyVim `ai.copilot` extra, auth with `:Copilot auth`
+- `config/herdr/` — herdr config + the local `last-tab` plugin (registered by sync.sh)
+- `config/aliases.sh` — `clauded`, `codexd`, `hvps` (sourced from `.bashrc`/`.zshrc`)
 - CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, gh, bun, node
-- macOS only: Homebrew itself + brews/casks, declared in `darwin/configuration.nix`
+- macOS only: Homebrew itself + brews/casks, declared in `nix/darwin.nix`
 
 ## Not managed (yet)
 

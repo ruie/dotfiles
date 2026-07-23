@@ -32,7 +32,7 @@ grep -qxF "$LINE" "$RC" 2> /dev/null || echo "$LINE" >> "$RC"
 # Register herdr plugins once (herdr keeps its own registry)
 if command -v herdr > /dev/null; then
   herdr plugin list 2> /dev/null | grep -q last-tab ||
-    herdr plugin link "$PWD/herdr/plugins/last-tab" > /dev/null
+    herdr plugin link "$PWD/config/herdr/plugins/last-tab" > /dev/null
   herdr plugin list 2> /dev/null | grep -q vim-herdr-navigation ||
     herdr plugin install paulbkim-dev/vim-herdr-navigation --yes > /dev/null
   mkdir -p ~/.local/state/herdr/plugins/last-tab
