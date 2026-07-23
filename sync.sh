@@ -63,6 +63,9 @@ if command -v herdr >/dev/null; then
   herdr plugin list 2>/dev/null | grep -q vim-herdr-navigation ||
     herdr plugin install paulbkim-dev/vim-herdr-navigation --yes >/dev/null
   mkdir -p ~/.local/state/herdr/plugins/last-tab
+  # home-manager recreates the config.toml symlink during switch; if herdr's
+  # watcher catches the gap it falls back to defaults — force a clean re-read
+  herdr server reload-config >/dev/null 2>&1 || true
 fi
 
 echo "Synced"
