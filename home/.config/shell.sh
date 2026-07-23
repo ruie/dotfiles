@@ -9,6 +9,15 @@ for brew_bin in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew; do
 done
 unset brew_bin
 
+# nix tools win even when the parent env predates nix (e.g. terminals inside a
+# herdr server started before a sync): Linux standalone profile, macOS
+# home-manager-module profile, determinate default profile.
+for nix_bin in "/nix/var/nix/profiles/default/bin" "/etc/profiles/per-user/$USER/bin" "$HOME/.nix-profile/bin"; do
+  [ -d "$nix_bin" ] || continue
+  case ":$PATH:" in *":$nix_bin:"*) ;; *) export PATH="$nix_bin:$PATH" ;; esac
+done
+unset nix_bin
+
 alias ..="cd .."
 alias clauded="claude --dangerously-skip-permissions"
 
