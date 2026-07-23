@@ -26,7 +26,9 @@ detach = "prefix+d"
 focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
 focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
 focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
-focus_pane_right = ["prefix+l", "ctrl+alt+l"]
+# prefix+l belongs to the last-tab toggle below (tmux muscle memory);
+# ctrl+alt+l and vim-aware ctrl+l cover focus-right
+focus_pane_right = "ctrl+alt+l"
 
 # tmux: prefix+z zooms (fullscreens) the focused pane; prefix+f added as a
 # same-action alias (f for "focus")
@@ -47,9 +49,10 @@ zoom = ["prefix+f", "prefix+z"]
 #   tab (via `herdr tab focus`); if that tab was closed it drops the stale
 #   entry and does nothing. Requires jq (same as vim-herdr-navigation).
 # Debug: `herdr plugin log list --plugin last-tab` shows record/toggle runs.
-# (prefix+l was focus_pane_right; ctrl+alt+l / vim-aware ctrl+l still do that)
+# Caveat: plugin_action keys don't fire over `herdr --remote` attach
+# (upstream bug, ogulcancelik/herdr#1598) — this binding is local-only.
 [[keys.command]]
-key = "prefix+shift+l"
+key = "prefix+l"
 type = "plugin_action"
 command = "last-tab.toggle"
 description = "switch to last tab"

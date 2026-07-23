@@ -9,7 +9,7 @@ cd "$(dirname "$0")"
 [ -e /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh ] &&
   . /nix/var/nix/profiles/default/etc/profile.d/nix-daemon.sh
 
-command -v nix > /dev/null || {
+command -v nix >/dev/null || {
   echo "nix not found — install Determinate Nix first:" >&2
   echo "  curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate" >&2
   exit 1
@@ -27,20 +27,20 @@ fi
 
 # Wire shared shell setup into the machine-local rc file once
 LINE='[ -f ~/.config/shell.sh ] && . ~/.config/shell.sh'
-sed -i.bak '/config\/dotfiles\/\(aliases\|shell\)\.sh/d' "$RC" 2> /dev/null && rm -f "$RC.bak"
-grep -qxF "$LINE" "$RC" 2> /dev/null || echo "$LINE" >> "$RC"
+sed -i.bak '/config\/dotfiles\/\(aliases\|shell\)\.sh/d' "$RC" 2>/dev/null && rm -f "$RC.bak"
+grep -qxF "$LINE" "$RC" 2>/dev/null || echo "$LINE" >>"$RC"
 
 # hunk isn't in nixpkgs; bun covers Linux, Homebrew covers macOS
 export PATH="$HOME/.bun/bin:$PATH"
-command -v hunk > /dev/null || bun install -g hunkdiff > /dev/null
+command -v hunk >/dev/null || bun install -g hunkdiff >/dev/null
 
 # Register herdr plugins once (herdr keeps its own registry)
-if command -v herdr > /dev/null; then
-  herdr plugin list 2> /dev/null | grep -q last-tab ||
-    herdr plugin link "$PWD/home/.config/herdr/plugins/last-tab" > /dev/null
-  herdr plugin list 2> /dev/null | grep -q vim-herdr-navigation ||
-    herdr plugin install paulbkim-dev/vim-herdr-navigation --yes > /dev/null
+if command -v herdr >/dev/null; then
+  herdr plugin list 2>/dev/null | grep -q last-tab ||
+    herdr plugin link "$PWD/home/.config/herdr/plugins/last-tab" >/dev/null
+  herdr plugin list 2>/dev/null | grep -q vim-herdr-navigation ||
+    herdr plugin install paulbkim-dev/vim-herdr-navigation --yes >/dev/null
   mkdir -p ~/.local/state/herdr/plugins/last-tab
 fi
 
-echo "synced"
+echo "Synced"
