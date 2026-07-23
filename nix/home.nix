@@ -10,6 +10,9 @@ in {
 
   programs.home-manager.enable = true;
 
+  # Don't nag about unread home-manager changelog entries on every sync
+  news.display = "silent";
+
   home.packages = with pkgs; [
     neovim
     ripgrep
