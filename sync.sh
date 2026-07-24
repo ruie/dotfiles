@@ -5,6 +5,8 @@ set -euo pipefail
 
 cd "$(dirname "$0")"
 
+step() { printf '\n\033[1;34m==> %s\033[0m\n' "$*"; }
+
 # Homebrew (linuxbrew on Linux, /opt/homebrew on Apple Silicon). Its installer
 # needs sudo, so only run it where sudo can prompt.
 if ! command -v brew >/dev/null; then
@@ -34,21 +36,31 @@ export HOMEBREW_NO_AUTO_UPDATE=1
 PATH=$(printf %s "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd:)
 
 # Packages: shared base + per-machine extras
-brew bundle --quiet --file packages/bundle
-if [ "$USER" = "vdelapena" ]; then brew bundle --quiet --file packages/bundle.work; fi
-if [ "$(uname)" = "Darwin" ]; then brew bundle --quiet --file packages/bundle.mac; fi
+step "Packages: base (packages/bundle)"
+brew bundle --file packages/bundle
+if [ "$USER" = "vdelapena" ]; then
+  step "Packages: work extras (packages/bundle.work)"
+  brew bundle --file packages/bundle.work
+fi
+if [ "$(uname)" = "Darwin" ]; then
+  step "Packages: macOS casks (packages/bundle.mac)"
+  brew bundle --file packages/bundle.mac
+fi
 
 # Self-updating tools brew can't manage well, installed once on fresh
 # machines: bun (dev runtime, `bun upgrade`), claude (native installer,
 # self-updates), nvm (node versions). Auth stays manual (gh auth login,
 # claude first run, :Copilot auth).
 if [ ! -d "$HOME/.bun" ]; then
+  step "Bootstrap: bun (first run only)"
   curl -fsSL https://bun.sh/install | bash
 fi
 if ! command -v claude >/dev/null && [ ! -x "$HOME/.local/bin/claude" ]; then
+  step "Bootstrap: claude (first run only)"
   curl -fsSL https://claude.ai/install.sh | bash
 fi
 if [ ! -d "$HOME/.nvm" ]; then
+  step "Bootstrap: nvm + node LTS (first run only)"
   curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
   export NVM_DIR="$HOME/.nvm"
   . "$NVM_DIR/nvm.sh"
@@ -66,7 +78,8 @@ for cfg in nvim herdr/config.toml starship.toml shell.sh wezterm; do
 done
 
 # Symlink home/ into ~ (home/.config/<x> IS ~/.config/<x>)
-stow -R -d "$PWD" -t "$HOME" home
+step "Configs: stow home/ into ~"
+stow -R -v -d "$PWD" -t "$HOME" home
 
 # Wire shared shell setup into the machine-local rc file once
 if [ "$(uname)" = "Darwin" ]; then RC=~/.zshrc; else RC=~/.bashrc; fi
@@ -75,6 +88,7 @@ grep -qxF "$LINE" "$RC" 2>/dev/null || echo "$LINE" >>"$RC"
 
 # Register herdr plugins once (herdr keeps its own registry)
 if command -v herdr >/dev/null; then
+  step "herdr: plugins + config reload"
   herdr plugin list 2>/dev/null | grep -q last-tab ||
     herdr plugin link "$PWD/home/.config/herdr/plugins/last-tab" >/dev/null
   herdr plugin list 2>/dev/null | grep -q vim-herdr-navigation ||
@@ -85,4 +99,4 @@ if command -v herdr >/dev/null; then
   herdr server reload-config >/dev/null 2>&1 || true
 fi
 
-echo "Synced"
+step "Synced"
