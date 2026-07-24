@@ -1,0 +1,8 @@
+# Work-only CLIs — applied on the work WSL machine only.
+# axiom is NOT here: its brew formula was disabled upstream (2025-08, cask-only
+# now, and casks don't exist on Linux). The existing keg still works; if it's
+# ever needed fresh, use axiom's own installer.
+tap "shopify/shopify"
+tap "superfly/tap"
+brew "shopify/shopify/shopify-cli"
+brew "superfly/tap/flyctl"

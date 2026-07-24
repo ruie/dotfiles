@@ -1,64 +1,63 @@
 # dotfiles
 
-Nix-flake dotfiles for all three machines. Home Manager symlinks configs back
-into this repo, so edits happen in place and `git status` shows drift.
+Homebrew + GNU Stow dotfiles for all three machines. Stow symlinks configs
+back into this repo, so edits happen in place and `git status` shows drift.
 
-| Machine | OS | Profile | Driver |
+| Machine | OS | Packages | Extras |
 |---|---|---|---|
-| work | Windows WSL (Ubuntu) | `vdelapena` | home-manager standalone |
-| personal | macOS (Apple Silicon) | `mac` (user `ruie`) | nix-darwin + nix-homebrew + home-manager |
-| vps | Hetzner Ubuntu | `ruie` | home-manager standalone |
+| work | Windows WSL (Ubuntu) | linuxbrew | `packages/bundle.work` |
+| personal | macOS (Apple Silicon) | Homebrew | `packages/bundle.mac` (casks, fonts) |
+| vps | Hetzner Ubuntu | linuxbrew | — |
 
 ## Layout
 
 ```
-flake.nix     machine profiles (the only place machines are declared)
 sync.sh       the one command — apply everything, idempotent
-nix/          how machines are built
-  home.nix      shared user env: packages, symlinks (all machines)
-  darwin.nix    macOS system: nix-darwin + Homebrew
-home/         mirrors ~ — home/.config/<x> IS ~/.config/<x>
+packages/
+  bundle        base Brewfile: CLI tools, every machine
+  bundle.work   work-only CLIs (shopify, flyctl, axiom)
+  bundle.mac    macOS casks (WezTerm, nerd font)
+home/         mirrors ~ — home/.config/<x> IS ~/.config/<x> (via stow)
   .config/
     nvim/           LazyVim config
     herdr/          herdr config + local last-tab plugin
-    wezterm/        WezTerm config (macOS only)
+    wezterm/        WezTerm config (used on macOS)
     starship.toml   prompt
-    shell.sh        aliases (sync, .., clauded, codexd, hvps), PATH, starship init
+    shell.sh        PATH order, aliases (sync, .., clauded, codexd, hvps), starship init
 ```
 
 ## Any machine, fresh or not
 
 ```sh
-curl -fsSL https://install.determinate.systems/nix | sh -s -- install --determinate
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 git clone git@github.com:ruie/dotfiles.git ~/dotfiles
 ~/dotfiles/sync.sh
 ```
 
-`sync.sh` detects the OS: macOS runs `darwin-rebuild switch` (system settings +
-Homebrew + user env), Linux runs `home-manager switch` (user env only). It is
-idempotent — rerun any time (after `git pull`, or after editing configs).
+`sync.sh` installs the Brewfiles for the machine, stows `home/` into `~`, and
+registers herdr plugins. It is idempotent — rerun any time (after `git pull`,
+or after editing configs). The `sync` alias does the pull + rerun.
 
-macOS first run: if the Mac's username isn't `ruie`, change the one `macUser`
-line in `flake.nix` first. Homebrew cleanup is `"none"` — flip to `"zap"` in
-`nix/darwin.nix` once the brews/casks list is the machine's complete inventory.
+macOS first run: install Homebrew first (its installer prompts for sudo); the
+Mac needs an SSH key on GitHub before the clone (private repo).
 
 ## What it manages
 
-- `home/.config/nvim/` — LazyVim (`~/.config/nvim`); copilot via the LazyVim `ai.copilot` extra, auth with `:Copilot auth`
-- `home/.config/herdr/` — herdr config + the local `last-tab` plugin (registered by sync.sh)
-- `home/.config/shell.sh` — aliases (`sync`, `..`, `clauded`, `codexd`, `hvps`), bun PATH, starship init (sourced from `.bashrc`/`.zshrc`)
-- `home/.config/starship.toml` — prompt config
-- `home/.config/wezterm/` — WezTerm config (symlinked on macOS only; the cask is in `nix/darwin.nix`)
-- CLI tools via Nix: neovim, ripgrep, fd, fzf, jq, tree, ast-grep, gh, lazygit, starship, JetBrainsMono Nerd Font
-- `herdr` + `hunk` — Homebrew everywhere: declared in `nix/darwin.nix` on macOS, installed by sync.sh on Linux (needs linuxbrew; sync prints the installer command if missing). Upgrade with `brew upgrade`, not `herdr update`.
-- macOS only: Homebrew itself + casks (WezTerm), declared in `nix/darwin.nix`
+- All CLI tools via Homebrew (`packages/bundle`): neovim, ripgrep, fd, fzf,
+  jq, gh, lazygit, starship, tree, ast-grep, stow, herdr, hunk.
+  Upgrade with `brew upgrade` (never `herdr update` — refuses on brew).
+- `home/.config/nvim/` — LazyVim (`~/.config/nvim`); copilot via the LazyVim
+  `ai.copilot` extra, auth with `:Copilot auth`
+- `home/.config/herdr/` — herdr config + the local `last-tab` plugin
+  (registered by sync.sh)
+- `home/.config/shell.sh` — PATH order (bun, ~/.local/bin, brew), aliases,
+  starship init (sourced from `.bashrc`/`.zshrc`; sync.sh adds the line)
 
-## Not managed (yet)
+## Not managed (deliberately)
 
-- `bun` — official installer (`~/.bun`), self-updates via `bun upgrade`; shell.sh puts it on PATH
+- `bun` — official installer (`~/.bun`), self-updates via `bun upgrade`
 - `node` — nvm per machine (its installer appends the loader to `.bashrc`)
 - Agent CLIs (`claude`, `codex`, `pi`) — installer/bun-based, see their docs
 - Tool auth state (`gh auth login`, `claude`, `:Copilot auth`)
-- Homebrew itself on Linux — sync.sh runs its installer on first interactive run (needs your sudo password)
-- Tailscale — system-level per machine (apt on the vps, Windows client for WSL,
-  the macOS app); shell.sh aliases `tailscale` to the right CLI everywhere
+- Tailscale — system-level per machine (apt on the vps, Windows client for
+  WSL, the macOS app); shell.sh aliases `tailscale` to the right CLI everywhere

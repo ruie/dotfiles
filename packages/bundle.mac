@@ -1,0 +1,4 @@
+# macOS-only — GUI apps and fonts (Linux machines render no fonts locally:
+# WSL uses Windows-side fonts, the vps is headless).
+cask "wezterm"
+cask "font-jetbrains-mono-nerd-font"

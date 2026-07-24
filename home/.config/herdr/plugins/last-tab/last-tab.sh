@@ -10,9 +10,9 @@
 
 set -euo pipefail
 
-# jq comes from nix; the herdr server's env may predate nix on PATH
-# (Linux: ~/.nix-profile, macOS home-manager module: /etc/profiles/per-user).
-PATH="$HOME/.nix-profile/bin:/etc/profiles/per-user/$USER/bin:$PATH"
+# jq comes from brew; the herdr server's env may not have it on PATH
+# (linuxbrew on Linux, /opt/homebrew on Apple Silicon)
+PATH="/home/linuxbrew/.linuxbrew/bin:/opt/homebrew/bin:$PATH"
 
 cmd="${1:?usage: last-tab.sh <record|toggle>}"
 herdr="${HERDR_BIN_PATH:-herdr}"
