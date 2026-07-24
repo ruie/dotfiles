@@ -3,6 +3,10 @@
 # bun-installed globals (agent CLIs)
 case ":$PATH:" in *":$HOME/.bun/bin:"*) ;; *) export PATH="$HOME/.bun/bin:$PATH" ;; esac
 
+# ~/.local/bin (claude, user scripts) — .profile only covers login shells;
+# herdr-spawned tabs are non-login and need it here
+case ":$PATH:" in *":$HOME/.local/bin:"*) ;; *) export PATH="$HOME/.local/bin:$PATH" ;; esac
+
 # Homebrew (linuxbrew on Linux, /opt/homebrew on Apple Silicon)
 for brew_bin in /home/linuxbrew/.linuxbrew/bin/brew /opt/homebrew/bin/brew; do
   [ -x "$brew_bin" ] && eval "$("$brew_bin" shellenv)" && break
