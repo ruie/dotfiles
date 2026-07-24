@@ -1,6 +1,5 @@
 # Base tools — every machine. Applied by sync.sh via `brew bundle`.
 brew "ast-grep"
-brew "codex"
 brew "fd"
 brew "fzf"
 brew "gh"
@@ -14,3 +13,5 @@ brew "ripgrep"
 brew "starship"
 brew "stow"
 brew "tree"
+# codex ships as a binary cask (works on Linux too); pi is a formula above
+cask "codex"
