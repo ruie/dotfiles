@@ -38,6 +38,23 @@ brew bundle --quiet --file packages/bundle
 if [ "$USER" = "vdelapena" ]; then brew bundle --quiet --file packages/bundle.work; fi
 if [ "$(uname)" = "Darwin" ]; then brew bundle --quiet --file packages/bundle.mac; fi
 
+# Self-updating tools brew can't manage well, installed once on fresh
+# machines: bun (dev runtime, `bun upgrade`), claude (native installer,
+# self-updates), nvm (node versions). Auth stays manual (gh auth login,
+# claude first run, :Copilot auth).
+if [ ! -d "$HOME/.bun" ]; then
+  curl -fsSL https://bun.sh/install | bash
+fi
+if ! command -v claude >/dev/null && [ ! -x "$HOME/.local/bin/claude" ]; then
+  curl -fsSL https://claude.ai/install.sh | bash
+fi
+if [ ! -d "$HOME/.nvm" ]; then
+  curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
+  export NVM_DIR="$HOME/.nvm"
+  . "$NVM_DIR/nvm.sh"
+  nvm install --lts
+fi
+
 # Migration (2026-07): configs used to be symlinked by home-manager into
 # /nix/store — clear those so stow can own the links. Delete this block once
 # every machine has synced past the nix removal.
