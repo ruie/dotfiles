@@ -28,12 +28,15 @@ if ! command -v brew >/dev/null; then
   fi
 fi
 
-# No auto-update: versions come from brew's JSON API anyway, and a stale
-# multi-tap git update can stall sync for many minutes (seen on WSL)
+# One explicit catalog refresh per sync, instead of implicit auto-updates
+# before every brew command below. Without a refresh brew never learns about
+# new versions and bundle "upgrades" nothing (seen with codex 2026-07-29).
 export HOMEBREW_NO_AUTO_UPDATE=1
 # On WSL, drop Windows /mnt/* PATH entries for brew: its Ruby stats every
 # PATH dir over the 9p bridge, which can hang for minutes (seen 2026-07-23)
 PATH=$(printf %s "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd:)
+step "Packages: refresh brew catalog"
+brew update --quiet
 
 # Packages: shared base + per-machine extras
 step "Packages: base (packages/bundle)"
