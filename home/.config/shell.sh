@@ -14,6 +14,7 @@ done
 unset brew_bin
 
 alias ..="cd .."
+alias lg="lazygit"
 alias clauded="claude --dangerously-skip-permissions"
 
 # Pull the latest dotfiles and apply them (subshell keeps the current cwd;
