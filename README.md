@@ -23,7 +23,7 @@ home/         mirrors ~ — home/.config/<x> IS ~/.config/<x> (via stow)
     herdr/          herdr config + local last-tab plugin
     wezterm/        WezTerm config (used on macOS)
     starship.toml   prompt
-    shell.sh        PATH order, aliases (sync, .., clauded, codexd, hvps), starship init
+    shell.sh        PATH order, aliases (sync, .., lg, clauded, codexd, hvps), starship init
 ```
 
 ## Any machine, fresh or not
