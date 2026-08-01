@@ -34,7 +34,7 @@ fi
 export HOMEBREW_NO_AUTO_UPDATE=1
 # On WSL, drop Windows /mnt/* PATH entries for brew: its Ruby stats every
 # PATH dir over the 9p bridge, which can hang for minutes (seen 2026-07-23)
-PATH=$(printf %s "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd:)
+PATH=$(printf %s "$PATH" | tr ':' '\n' | grep -v '^/mnt/' | paste -sd: -)
 step "Packages: refresh brew catalog"
 brew update --quiet
 
