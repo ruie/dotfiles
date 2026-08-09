@@ -51,7 +51,8 @@ Mac needs an SSH key on GitHub before the clone (private repo).
 - `home/.config/herdr/` — herdr config + the local `last-tab` plugin
   (registered by sync.sh)
 - `home/.config/shell.sh` — PATH order (bun, ~/.local/bin, brew), aliases,
-  starship init (sourced from `.bashrc`/`.zshrc`; sync.sh adds the line)
+  starship init (sourced from `.bashrc`/`.zshrc`; sync.sh prepends the line
+  so machine-local settings below it win)
 
 ## Not managed (deliberately)
 

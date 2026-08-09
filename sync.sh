@@ -84,10 +84,16 @@ done
 step "Configs: stow home/ into ~"
 stow -R -v -d "$PWD" -t "$HOME" home
 
-# Wire shared shell setup into the machine-local rc file once
+# Wire shared shell setup into the machine-local rc file, prepended so
+# machine-local lines below it can override the shared defaults. Moves the
+# line up if an earlier sync appended it at the bottom.
 if [ "$(uname)" = "Darwin" ]; then RC=~/.zshrc; else RC=~/.bashrc; fi
 LINE='[ -f ~/.config/shell.sh ] && . ~/.config/shell.sh'
-grep -qxF "$LINE" "$RC" 2>/dev/null || echo "$LINE" >>"$RC"
+if [ "$(head -n1 "$RC" 2>/dev/null)" != "$LINE" ]; then
+  touch "$RC"
+  { printf '%s\n' "$LINE"; grep -vxF "$LINE" "$RC" || true; } >"$RC.tmp"
+  mv "$RC.tmp" "$RC"
+fi
 
 # Register herdr plugins once (herdr keeps its own registry)
 if command -v herdr >/dev/null; then
