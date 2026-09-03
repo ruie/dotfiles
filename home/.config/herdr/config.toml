@@ -23,9 +23,9 @@ detach = "prefix+d"
 # vim-tmux-navigator-style direct pane navigation (ctrl+alt is the
 # terminal-safe chord family; plain ctrl+hjkl is handled vim-aware by the
 # vim-herdr-navigation plugin below)
-focus_pane_left  = ["prefix+h", "ctrl+alt+h"]
-focus_pane_down  = ["prefix+j", "ctrl+alt+j"]
-focus_pane_up    = ["prefix+k", "ctrl+alt+k"]
+focus_pane_left = ["prefix+h", "ctrl+alt+h"]
+focus_pane_down = ["prefix+j", "ctrl+alt+j"]
+focus_pane_up = ["prefix+k", "ctrl+alt+k"]
 # prefix+l belongs to the last-tab toggle below (tmux muscle memory);
 # ctrl+alt+l and vim-aware ctrl+l cover focus-right
 focus_pane_right = "ctrl+alt+l"
@@ -97,6 +97,7 @@ description = "navigate right (vim/herdr)"
 [ui]
 # No gaps between split panes — adjacent panes share a single divider border
 pane_gaps = false
+pane_scrollbars = false
 
 # Tab bar styling (checked 2026-07-17, herdr 0.7.4): NOT configurable. The tab
 # row's gaps/separators are hard-coded — no ui.tab_gaps / tab_separator keys
