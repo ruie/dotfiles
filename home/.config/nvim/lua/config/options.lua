@@ -16,3 +16,11 @@ vim.g.clipboard = {
   copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
   paste = { ["+"] = paste_from_register, ["*"] = paste_from_register },
 }
+
+-- No .swp files: nothing to recover after the WSL hangs, and no "swap file
+-- exists" prompt when reopening the same file. undofile stays on.
+vim.opt.swapfile = false
+
+-- Rounded border on every floating window (hover, completion menu, docs,
+-- pickers) — blink.cmp adopts this option too.
+vim.opt.winborder = "rounded"
