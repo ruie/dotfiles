@@ -24,6 +24,8 @@ alias codexd="codex --dangerously-bypass-approvals-and-sandbox"
 
 # Attach to the vps herdr workspace (from any machine that isn't the vps)
 [ "$(hostname)" != "vps" ] && alias hvps='herdr --remote vps --remote-keybindings server'
+# Same workspace over mosh: local echo hides round-trip lag on slow routes
+[ "$(hostname)" != "vps" ] && alias mvps='mosh vps -- herdr'
 
 # tailscale CLI everywhere: native on the vps (apt), Windows client's CLI on
 # WSL, the GUI app's bundled CLI on macOS — no second install needed
