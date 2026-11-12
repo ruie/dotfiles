@@ -24,6 +24,8 @@ home/         mirrors ~ — home/.config/<x> IS ~/.config/<x> (via stow)
     wezterm/        WezTerm config (used on macOS)
     starship.toml   prompt
     shell.sh        PATH order, aliases (sync, .., lg, clauded, codexd, hvps), starship init
+docs/         notes on setups this repo doesn't manage yet
+  claude-code-pstack.md   pclaude: Claude Code + pstack, loaded on demand
 ```
 
 ## Any machine, fresh or not
