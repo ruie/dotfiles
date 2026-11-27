@@ -47,6 +47,11 @@ alias pclaude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 clauded --plugin-d
   `.claude/rules/*.md` as memory. Without the variable, no context loads.
 - The variable is set for that one command only. It never reaches your shell.
 - `pclaude` calls `clauded`, so it picks up whatever arguments `clauded` has.
+- The clone has about 770 files because one repo serves more than a dozen agent tools and
+  carries its own tests. More than half are tests: the `statechart` skill alone
+  has 356 test corpus files. At startup Claude Code reads only each skill's
+  name and description, the 4 agents and the hook. That costs about 6k tokens
+  (`/context all`). The other files are read only when a skill uses them.
 
 ## Gotchas
 
@@ -88,10 +93,9 @@ alias pclaude='CLAUDE_CODE_ADDITIONAL_DIRECTORIES_CLAUDE_MD=1 clauded --plugin-d
 
 ## Common tasks
 
-```sh
-# Update pstack (manual; nothing auto-updates), then start a new session
-git -C ~/.local/share/pstack-claude pull
+To update pstack, follow [Update pstack](#update-pstack). Nothing auto-updates.
 
+```sh
 # Add pstack-only instructions
 $EDITOR ~/.config/pstack-claude/CLAUDE.md
 # or split them into ~/.config/pstack-claude/.claude/rules/*.md
@@ -99,6 +103,86 @@ $EDITOR ~/.config/pstack-claude/CLAUDE.md
 # Remove everything: then delete the pstack block in ~/.bashrc
 rm -rf ~/.local/share/pstack-claude ~/.config/pstack-claude
 ```
+
+## Update pstack
+
+To have an agent do it, ask in any session:
+
+```
+@~/dotfiles/docs/claude-code-pstack.md update pstack
+```
+
+In a `pclaude` session, "update pstack" is enough: the context file points here.
+
+Steps for the agent. Run them in order from `~/.local/share/pstack-claude`.
+Never edit, stash, reset or merge in the clone. If a step fails, stop and report.
+
+1. **Fetch and see what's coming.**
+
+   ```sh
+   git fetch --tags
+   git status -sb                      # must show no local changes
+   echo "$(cat VERSION) -> $(git show origin/main:VERSION)"
+   git log --oneline HEAD..origin/main
+   ```
+
+   Stop here if nothing is incoming.
+
+2. **Review what runs at every `pclaude` start, before pulling.**
+
+   ```sh
+   git diff HEAD origin/main -- plugins/pstack/hooks/hooks.json \
+     plugins/pstack/hooks/session-start.sh \
+     plugins/pstack/hooks/session-start-context.md plugins/pstack/.claude-plugin
+   ```
+
+   Read every change. Other files in `hooks/` belong to other agent tools
+   (Copilot, Codex, Muse, …). Stop and ask before pulling if a change reaches the
+   network, writes outside the plugin, or runs new commands.
+
+3. **Pull, then list skills and agents added, removed or renamed.**
+
+   ```sh
+   old=$(git rev-parse HEAD)
+   git pull --ff-only
+   git diff --name-status --diff-filter=ADR "$old" HEAD -- \
+     'plugins/pstack/skills/*/SKILL.md' 'plugins/pstack/agents/*'
+   ```
+
+4. **Read what changed.**
+
+   ```sh
+   git diff "$old" HEAD -- CHANGES.md                  # new release notes
+   git diff "$old" HEAD -- plugins/pstack/models.json  # default models per role
+   ```
+
+   If roles were retired, check `~/.claude/pstack-models.md` and any
+   repository's `.claude/pstack-models.md` for them. `/setup-pstack` drops
+   retired roles on its next run.
+
+5. **Check the plugin, and that pstack is still not installed.**
+
+   ```sh
+   claude plugin validate plugins/pstack
+   grep -il pstack ~/.claude/settings.json ~/.claude/plugins/installed_plugins.json \
+     ~/.claude/plugins/known_marketplaces.json   # expect no output
+   ```
+
+6. **Run a real session.** `pclaude` is an alias, so go through an interactive shell:
+
+   ```sh
+   bash -ic 'pclaude -p "Without tools, in two lines: the path of the pstack clone, then whether a skill named poteto-mode is available (yes or no)." --model haiku'
+   ```
+
+   Expect `/home/<you>/.local/share/pstack-claude` and `yes`.
+
+7. **Report:** old and new version, the changes that matter to a Claude Code
+   user, any hook or manifest change, skills or agents added or removed, and
+   each check's result. Remind the user to start a new `pclaude` session.
+   Running sessions keep the old version.
+
+If the setup itself changes, update this doc as well. It lives in the
+`~/dotfiles` git repo: ask before committing or pushing.
 
 ## Verify
 
